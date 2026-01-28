@@ -1,0 +1,89 @@
+spring:
+  application:
+    name: AiClassificator
+
+  # Desabilita Config Server para desenvolvimento local
+  cloud:
+    config:
+      enabled: false
+
+# Configuracoes do servidor
+server:
+  port: 8080
+
+# Configuracoes de IA
+ai:
+  # OpenAI
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    endpoint: https://api.openai.com/v1/chat/completions
+    model: gpt-4o-mini
+    temperature: 0.3
+    max-tokens: 500
+    timeout: 30000
+
+  # Sanitizador
+  sanitizer:
+    body-max-length: 300
+    body-min-length: 200
+    sanitize-pii: true
+
+  # Classificacao
+  classification:
+    confidence-threshold: 0.75
+    fallback-queue: Service Desk (1º Nivel)
+
+# Configuracoes de Resilience4j
+resilience4j:
+  circuitbreaker:
+    instances:
+      openai:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState: 30s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+        slowCallDurationThreshold: 10s
+        slowCallRateThreshold: 100
+
+  retry:
+    instances:
+      openai:
+        maxAttempts: 3
+        waitDuration: 1s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        retryExceptions:
+          - org.springframework.web.client.RestClientException
+          - java.net.SocketTimeoutException
+          - java.io.IOException
+
+  ratelimiter:
+    instances:
+      openai:
+        limitForPeriod: 100
+        limitRefreshPeriod: 1m
+        timeoutDuration: 0
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,circuitbreakers
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.caesb.AiClassificator: DEBUG
+    io.github.resilience4j: INFO
