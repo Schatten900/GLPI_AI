@@ -1,5 +1,6 @@
 package com.caesb.AiClassificator.service;
 
+import com.caesb.AiClassificator.model.SentimentResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -114,6 +115,7 @@ public class SentimentAnalyzer {
      * @param body Texto a ser analisado
      * @return Resultado da analise com scores e labels
      */
+
     public SentimentResult analyzeSentiment(String body) {
         if (body == null || body.isBlank()) {
             return SentimentResult.builder()
@@ -151,12 +153,12 @@ public class SentimentAnalyzer {
 
         // Calcula score de criticidade (0-3)
         int criticalityScore = 0;
-        if ("negative".equals(sentimentLabel)) {
+
+        if ("negative".equals(sentimentLabel))
             criticalityScore += 1;
-        }
-        if (urgencyDetected) {
+
+        if (urgencyDetected)
             criticalityScore += 2;
-        }
 
         // Deve aumentar severidade se criticidade >= 2
         boolean shouldIncreaseSeverity = criticalityScore >= 2;
@@ -205,45 +207,5 @@ public class SentimentAnalyzer {
             }
         }
         return false;
-    }
-
-    /**
-     * Resultado da analise de sentimento.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class SentimentResult {
-        /**
-         * Score de sentimento (-1.0 a 1.0).
-         * Valores negativos indicam sentimento negativo.
-         */
-        private double sentimentScore;
-
-        /**
-         * Label do sentimento: positive, neutral, negative.
-         */
-        private String sentimentLabel;
-
-        /**
-         * Indica se foi detectada urgencia no texto.
-         */
-        private boolean urgencyDetected;
-
-        /**
-         * Score de criticidade (0-3).
-         * 0: Normal
-         * 1: Negativo
-         * 2: Urgente
-         * 3: Negativo + Urgente
-         */
-        private int criticalityScore;
-
-        /**
-         * Indica se a severidade deve ser aumentada.
-         * True se criticalityScore >= 2.
-         */
-        private boolean shouldIncreaseSeverity;
     }
 }

@@ -11,16 +11,62 @@ spring:
 server:
   port: 8080
 
+# Configuracoes de seguranca
+security:
+  # API Key para autenticacao (definir via variavel de ambiente em producao)
+  api-key: ${API_KEY:}
+  # Admin Key para operacoes administrativas (rotacao de chaves)
+  admin-key: ${ADMIN_KEY:}
+
+# Configuracao do OpenAPI/Swagger
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  show-actuator: false
+
 # Configuracoes de IA
 ai:
-  # OpenAI
-  openai:
-    api-key: ${OPENAI_API_KEY:}
-    endpoint: https://api.openai.com/v1/chat/completions
-    model: gpt-4o-mini
-    temperature: 0.3
-    max-tokens: 500
+  # Provider e modelo padrao quando nao especificado na requisicao
+  default-provider: azure-openai
+  default-model: gpt-4o-mini
+
+  # Azure OpenAI (provider principal)
+  azure-openai:
+    enabled: true
+    resource-name: ${AZURE_OPENAI_RESOURCE:caesb-openai}
+    api-key: ${AZURE_OPENAI_API_KEY:}
+    api-version: "2024-02-01"
     timeout: 30000
+    default-temperature: 0.3
+    default-max-tokens: 500
+    deployments:
+      gpt-4o-mini:
+        deployment-name: gpt-4o-mini-deploy
+        display-name: "GPT-4o Mini"
+        description: "Modelo rapido e economico para tarefas gerais"
+        enabled: true
+      gpt-4o:
+        deployment-name: gpt-4o-deploy
+        display-name: "GPT-4o"
+        description: "Modelo de alta qualidade para tarefas complexas"
+        enabled: true
+      gpt-4:
+        deployment-name: gpt-4-deploy
+        display-name: "GPT-4"
+        description: "Modelo robusto e confiavel"
+        enabled: false
+      claude-3-sonnet:
+        deployment-name: claude-3-sonnet-deploy
+        display-name: "Claude 3 Sonnet"
+        description: "Claude 3 Sonnet via Azure AI Foundry"
+        enabled: false
+
 
   # Sanitizador
   sanitizer:
@@ -33,11 +79,16 @@ ai:
     confidence-threshold: 0.75
     fallback-queue: Service Desk (1º Nivel)
 
+  # Cache de idempotencia
+  cache:
+    ttl-minutes: 5
+    max-size: 1000
+
 # Configuracoes de Resilience4j
 resilience4j:
   circuitbreaker:
     instances:
-      openai:
+      azureopenai:
         registerHealthIndicator: true
         slidingWindowSize: 10
         permittedNumberOfCallsInHalfOpenState: 3
@@ -51,7 +102,7 @@ resilience4j:
 
   retry:
     instances:
-      openai:
+      azureopenai:
         maxAttempts: 3
         waitDuration: 1s
         enableExponentialBackoff: true
@@ -63,20 +114,22 @@ resilience4j:
 
   ratelimiter:
     instances:
-      openai:
+      azureopenai:
         limitForPeriod: 100
         limitRefreshPeriod: 1m
         timeoutDuration: 0
 
-# Actuator
+# Actuator - configuracao segura
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,circuitbreakers
+        include: health,info
   endpoint:
     health:
-      show-details: always
+      show-details: when_authorized
+      probes:
+        enabled: true
   health:
     circuitbreakers:
       enabled: true

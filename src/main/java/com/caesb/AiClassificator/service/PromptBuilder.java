@@ -1,5 +1,6 @@
 package com.caesb.AiClassificator.service;
 
+import com.caesb.AiClassificator.model.PromptResult;
 import com.caesb.AiClassificator.model.ServiceCatalog;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -196,15 +197,4 @@ public class PromptBuilder {
         return ServiceCatalog.isValidServiceId(serviceId);
     }
 
-    /**
-     * Resultado da construcao do prompt.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PromptResult {
-        private String systemPrompt;
-        private String userPrompt;
-    }
 }

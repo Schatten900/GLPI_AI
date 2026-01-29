@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+*.iml
+.vscode
+*.swp
+
+# Build
+target/
+*.class
+*.jar
+*.war
+
+# Logs
+*.log
+logs/
+
+# Temp
+*.tmp
+*.temp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Maven wrapper (sera copiado explicitamente)
+!.mvn/wrapper/maven-wrapper.properties
+
+# Docs
+*.md
+!README.md
+
+# Claude
+.claude/
+
+# Env files (seguranca)
+.env
+*.env

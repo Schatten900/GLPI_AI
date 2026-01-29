@@ -13,19 +13,12 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "ai")
 public class AIProviderConfig {
 
-    private OpenAIConfig openai = new OpenAIConfig();
+    private String defaultProvider = "azure-openai";
+    private String defaultModel = "gpt-4o-mini";
+
     private SanitizerConfig sanitizer = new SanitizerConfig();
     private ClassificationConfig classification = new ClassificationConfig();
-
-    @Data
-    public static class OpenAIConfig {
-        private String apiKey;
-        private String endpoint = "https://api.openai.com/v1/chat/completions";
-        private String model = "gpt-4o-mini";
-        private Double temperature = 0.3;
-        private Integer maxTokens = 500;
-        private Integer timeout = 30000;
-    }
+    private CacheConfig cache = new CacheConfig();
 
     @Data
     public static class SanitizerConfig {
@@ -38,5 +31,11 @@ public class AIProviderConfig {
     public static class ClassificationConfig {
         private Double confidenceThreshold = 0.75;
         private String fallbackQueue = "Service Desk (1º Nivel)";
+    }
+
+    @Data
+    public static class CacheConfig {
+        private Integer ttlMinutes = 5;
+        private Integer maxSize = 1000;
     }
 }

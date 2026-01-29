@@ -19,15 +19,16 @@ public class ClassificationRequest {
 
     /**
      * Assunto do ticket (obrigatorio).
+     * Deve ter no minimo 5 caracteres para classificacao adequada.
      */
     @NotBlank(message = "Subject e obrigatorio")
-    @Size(max = 500, message = "Subject deve ter no maximo 500 caracteres")
+    @Size(min = 5, max = 500, message = "Subject deve ter entre 5 e 500 caracteres")
     private String subject;
 
     /**
      * Corpo do ticket (opcional, sera sanitizado e truncado).
      */
-    @Size(max = 10000, message = "Body deve ter no maximo 10000 caracteres")
+    @Size(max = 500, message = "Body deve ter no maximo 500 caracteres")
     private String body;
 
     /**

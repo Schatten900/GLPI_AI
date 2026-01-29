@@ -1,9 +1,7 @@
 package com.caesb.AiClassificator.client;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.caesb.AiClassificator.model.AIRequest;
+import com.caesb.AiClassificator.model.AIResponse;
 
 /**
  * Interface para clientes de provedores de IA (OpenAI, Claude, Gemini, etc).
@@ -28,37 +26,4 @@ public interface AIProviderClient {
      */
     boolean isAvailable();
 
-    /**
-     * Requisicao para a IA.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class AIRequest {
-        private String systemPrompt;
-        private String userPrompt;
-        private String model;
-        private Double temperature;
-        private Integer maxTokens;
-    }
-
-    /**
-     * Resposta da IA.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class AIResponse {
-        private boolean success;
-        private String content;
-        private String model;
-        private Integer promptTokens;
-        private Integer completionTokens;
-        private Integer totalTokens;
-        private Long latencyMs;
-        private String errorCode;
-        private String errorMessage;
-    }
 }

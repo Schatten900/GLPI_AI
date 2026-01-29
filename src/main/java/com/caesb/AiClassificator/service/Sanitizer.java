@@ -1,5 +1,6 @@
 package com.caesb.AiClassificator.service;
 
+import com.caesb.AiClassificator.model.SanitizedData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -238,16 +239,4 @@ public class Sanitizer {
                 .build();
     }
 
-    /**
-     * DTO para dados sanitizados.
-     */
-    @lombok.Data
-    @lombok.Builder
-    @lombok.NoArgsConstructor
-    @lombok.AllArgsConstructor
-    public static class SanitizedData {
-        private String subject;
-        private String body;
-        private String maskedSender;
-    }
 }

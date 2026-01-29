@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  aiclassificator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aiclassificator
+    ports:
+      - "8080:8080"
+    environment:
+      # Seguranca (obrigatorio em producao)
+      - API_KEY=${API_KEY}
+      - ADMIN_KEY=${ADMIN_KEY}
+
+      # Azure OpenAI (obrigatorio)
+      - AZURE_OPENAI_RESOURCE=${AZURE_OPENAI_RESOURCE}
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+
+      # Configuracoes opcionais
+      - SERVER_PORT=8080
+      - AI_OPENAI_MODEL=gpt-4o-mini
+      - AI_OPENAI_TEMPERATURE=0.3
+      - AI_CLASSIFICATION_CONFIDENCE_THRESHOLD=0.75
+
+      # Java options
+      - JAVA_OPTS=-Xms256m -Xmx512m
+
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    restart: unless-stopped
+
+#    networks:
+#      - glpi-network
+
+#networks:
+#  glpi-network:
+#    external: true
+#    name: glpi-network
+
+# Para usar sem rede externa do GLPI, comente o bloco networks acima e use:
+networks:
+   default:
+     driver: bridge

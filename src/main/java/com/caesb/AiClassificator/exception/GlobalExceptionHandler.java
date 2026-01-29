@@ -49,7 +49,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ClassificationResponse> handleClassificationException(
             ClassificationException ex) {
 
-        log.error("Erro de classificacao: {} - {}", ex.getErrorCode(), ex.getMessage());
+        // Log com stack trace para facilitar debug em producao
+        log.error("Erro de classificacao: {} - {} [correlationId={}]",
+                ex.getErrorCode(), ex.getMessage(), ex.getCorrelationId(), ex);
 
         return ResponseEntity.ok(
                 ClassificationResponse.builder()

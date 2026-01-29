@@ -1,9 +1,5 @@
 package com.caesb.AiClassificator.model;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,40 +9,7 @@ import java.util.Map;
  * Contem todos os servicos disponiveis organizados por tipo e dominio.
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class ServiceCatalog {
-
-    /**
-     * Representa um servico no catalogo.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Service {
-        private String id;
-        private String type;         // REQ, INC, OS
-        private String name;
-        private String description;
-        private String domain;       // Fila/area responsavel
-        private String queueId;
-    }
-
-    /**
-     * Representa uma fila/dominio no catalogo.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Queue {
-        private String id;
-        private String name;
-        private String description;
-    }
-
     /**
      * Mapa de filas por ID.
      */

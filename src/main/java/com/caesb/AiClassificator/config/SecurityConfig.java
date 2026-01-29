@@ -1,20 +1,24 @@
 package com.caesb.AiClassificator.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Configuracao de seguranca do Spring Security.
- * Por padrao, permite todas as requisicoes para a API.
- * Em producao, deve ser configurado com autenticacao adequada.
+ * Utiliza ApiKeyAuthFilter para autenticacao via header X-API-Key.
  */
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final ApiKeyAuthFilter apiKeyAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,18 +30,13 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // Configuracao de autorizacao
+                // Adiciona filtro de API Key antes do filtro de autenticacao padrao
+                .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // Configuracao de autorizacao - permite todas as requisicoes
+                // (a autenticacao e feita pelo ApiKeyAuthFilter)
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints publicos
-                        .requestMatchers("/api/v1/health").permitAll()
-                        .requestMatchers("/api/v1/catalog/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
-
-                        // Endpoint de classificacao - pode ser protegido em producao
-                        .requestMatchers("/api/v1/classify").permitAll()
-
-                        // Qualquer outra requisicao requer autenticacao
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 );
 
         return http.build();
